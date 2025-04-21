@@ -55,7 +55,7 @@ Roulette:
     call RowEleven
 
     ; Empty Line
-    call RowTwelve
+    ; call RowTwelve
 
     ; Option Line 1
     call RowThirteen
@@ -68,13 +68,14 @@ main ENDP
 ; Top Boundary
 RowOne:
 	call SetBlack
-	mov ecx, 15
+	mov ecx, 14
 	call MassWhiteSpace
-	mov ecx, 79
+	mov ecx, 87
 	call MassUnderScore
 	call WhiteSpace
 
     call Crlf
+    ret
 
 ; Block one of three
 RowTwo:
@@ -98,7 +99,7 @@ RowTwo:
     call Divider 
 
     call Crlf
-
+    ret
 RowThree:
     mov ecx, 12
     call MassWhiteSpace
@@ -207,9 +208,11 @@ RowThree:
     call TwoToOne
 
     call Crlf
-
+    ret
 RowFour:
-    mov ecx, 10
+    mov ecx, 4
+    call MassWhiteSpace
+    mov ecx, 6
     call MassUnderScore
     call WhiteSpace
     call ForwardSlash
@@ -231,14 +234,18 @@ RowFour:
     call Divider
 
     call Crlf
+    ret
 
 ; Block two of three
 RowFive:
+    mov ecx, 4
+    call MassWhiteSpace 
     call Divider
     mov ecx, 4
     call HashFill
     call Divider
     call Divider
+
     mov ecx, 4
     call MassWhiteSpace
 
@@ -259,8 +266,11 @@ RowFive:
     call Divider
 
     call Crlf
-    
+    ret
+
 RowSix:
+    mov ecx, 4
+    call MassWhiteSpace
     call Divider
     call HashTag
     call SetGray
@@ -271,6 +281,8 @@ RowSix:
     call HashTag
     call Divider
     call Divider
+    mov ecx, 4
+    call MassWhiteSpace
 
     call BlackFront
     call SetGray
@@ -375,19 +387,22 @@ RowSix:
     call TwoToOne
 
     call Crlf
+    ret
 
 RowSeven:
     ; Row Seven is the same as Row Five. We still call Row Seven in the main to avoid confusion
     call RowFive
-
-    call Crlf
+    ret
 
 ; Block three of three
 RowEight:
-    mov ecx, 10
+    mov ecx, 4
     call MassWhiteSpace
+    mov ecx, 6
+    call MassDash    
+    call WhiteSpace 
     call BackSlash
-    mov ecx, 5
+    mov ecx, 3
     call MassWhiteSpace
 
     call RedFill
@@ -407,6 +422,7 @@ RowEight:
     call Divider
 
     call Crlf
+    ret
 
 RowNine:
     mov ecx, 12
@@ -518,11 +534,13 @@ RowNine:
     call TwoToOne
 
     call Crlf
+    ret
 
 RowTen:
-    mov ecx, 14
+    mov ecx, 13
     call MassWhiteSpace
     call BackSlash
+    call WhiteSpace
 
     call RedFill
     call BlackFill
@@ -541,23 +559,26 @@ RowTen:
     call Divider
 
     call Crlf
+    ret
 
 ; Bottom Boundary
 RowEleven:
-    mov ecx, 16
+    mov ecx, 14
     call MassWhiteSpace
-    mov ecx, 99
+    mov ecx, 87
     call MassDash
 
     call Crlf
+    ret
 
 ; Empty Row
 RowTwelve:
     call Crlf
+    ret
 
 ; Option Line One
 RowThirteen:
-    mov ecx, 33
+    mov ecx, 25
     call MassWhiteSpace
     call SetBlack
 
@@ -566,7 +587,7 @@ RowThirteen:
     call WriteString
     call RightBracket
 
-    mov ecx, 32
+    mov ecx, 20
     call MassWhiteSpace
 
     call LeftBracket
@@ -574,7 +595,7 @@ RowThirteen:
     call WriteString
     call RightBracket
 
-    mov ecx, 32
+    mov ecx, 20
     call MassWhiteSpace
 
     call LeftBracket
@@ -583,10 +604,11 @@ RowThirteen:
     call RightBracket
 
     call Crlf
+    ret
 
 ; Option Line Two
 RowFourteen:
-    mov ecx, 25
+    mov ecx, 20
     call MassWhiteSpace
 
     call LeftBracket
@@ -601,7 +623,7 @@ RowFourteen:
     call WriteString
     call RightBracket
 
-    mov ecx, 22
+    mov ecx, 14
     call MassWhiteSpace
 
     call LeftBracket
@@ -616,7 +638,7 @@ RowFourteen:
     call WriteString
     call RightBracket
 
-    mov ecx, 25
+    mov ecx, 17
     call MassWhiteSpace
 
     call LeftBracket
@@ -632,6 +654,7 @@ RowFourteen:
     call RightBracket
 
     call Crlf
+    ret
 
 ;Printing Blocks of Characters
 TwoToOne:
@@ -640,93 +663,115 @@ TwoToOne:
     mov edx, OFFSET sTwoToOne
     call WriteString
     call RightBracket
+    ret
 RedFill:
 	call WhiteSpace
     call Divider
     call SetRed
-    mov ecx, 3
+    mov ecx, 4
     call HashFill
     call Divider
+    ret
 BlackFill:
 	call WhiteSpace
 	call Divider
-    mov ecx, 3
+    mov ecx, 4
     call HashFill
     call Divider
+    ret
 RedFront:
 	call WhiteSpace
 	call Divider
     call SetRed
     call HashTag
+    ret
 RedBack:
 	call SetRed
     call HashTag
     call Divider
+    ret
 BlackFront:
 	call WhiteSpace
 	call Divider
 	call HashTag
+    ret
 BlackBack:
 	call SetBlack
 	call HashTag
     call Divider
+    ret
 
 ; Printing Loops
 HashFill:
-	call HashTag
+	mov edx, OFFSET cPoundSign
+	call WriteString
 	loop HashFill
+    ret
 MassWhiteSpace:
 	call WhiteSpace
 	loop MassWhiteSpace
+    ret
 MassUnderScore:
-	call UnderScore
+	mov edx, OFFSET cUnderScore
+    call WriteString
 	loop MassUnderScore
+    ret
 MassDash:
     call Dash
     loop MassDash
+    ret
 
 ; Printing Characters
 Divider:
 	call SetBlack
     mov edx, OFFSET cVerticalBar
     call WriteString
+    ret
 HashTag:
 	mov edx, OFFSET cPoundSign
 	call WriteString
-UnderScore:
-	mov edx, OFFSET cUnderScore
-	call WriteString
+    ret
 WhiteSpace:
     mov edx, OFFSET cSpace
     call WriteString
+    ret
 ForwardSlash:
     call SetBlack
 	mov edx, OFFSET cForwardSlash
-    call WriteChar
+    call WriteString
+    ret
 BackSlash:
     call SetBlack
 	mov edx, OFFSET cBackSlash
-    call WriteChar
+    call WriteString
+    ret
 LeftBracket:
     call SetBlack
     mov edx, OFFSET cForwardBracket
-    call WriteChar
+    call WriteString
+    ret
 RightBracket:
+    
     mov edx, OFFSET cBackBracket
-    call WriteChar
+    call WriteString
+    ret
 Dash:
     mov edx, OFFSET cDash 
-    call WriteChar
+    call WriteString
+    ret
 
 ; Setting Colors
 SetBlack:
     mov eax, blackOnGreen
     call SetTextColor
+    ret
 SetRed:
 	mov eax, redOnGreen
 	call SetTextColor
+    ret
 SetGray:
 	mov eax, grayOnGreen
 	call SetTextColor
+    ret
 
 END main
