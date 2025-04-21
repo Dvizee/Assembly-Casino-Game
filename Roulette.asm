@@ -1,36 +1,37 @@
 INCLUDE Irvine32.inc
 .data
     ; Colors
-    blackOnGreen BYTE 20h 
-    redOnGreen BYTE 24h 
-    grayOnGreen BYTE 27h
+    blackOnGreen DWORD 20h 
+    redOnGreen DWORD 24h 
+    grayOnGreen DWORD 27h
 
     ; Characters
-    verticalBar BYTE '|', 0
-    poundSign BYTE '#', 0
-    space BYTE ' ',0
-    underScore BYTE '_', 0 
-    forwardSlash BYTE '/', 0
-    backSlash BYTE '\', 0
-    forwardBracket BYTE '[', 0
-    backBracket BYTE ']', 0
-    dash BYTE '-', 0
+    cVerticalBar BYTE '|', 0
+    cPoundSign BYTE '#', 0
+    cSpace BYTE ' ',0
+    cUnderScore BYTE '_', 0 
+    cForwardSlash BYTE '/', 0
+    cBackSlash BYTE '\', 0
+    cForwardBracket BYTE '[', 0
+    cBackBracket BYTE ']', 0
+    cDash BYTE '-', 0
 
     ; Strings
-    twoToOne BYTE "2 to 1", 0
-    first12 BYTE "1st 12", 0
-    second12 BYTE "2nd 12", 0
-    third12 BYTE "3rd 12", 0
-    oneTo18 BYTE "1 to 18", 0
-    nineteenTo36 BYTE "19 to 36", 0
-    even BYTE "Even", 0
-    odd BYTE "Odd", 0
-    red BYTE "Red", 0
-    black BYTE "Black", 0
+    sTwoToOne BYTE "2 to 1", 0
+    sFirst12 BYTE "1st 12", 0
+    sSecond12 BYTE "2nd 12", 0
+    sThird12 BYTE "3rd 12", 0
+    sOneTo18 BYTE "1 to 18", 0
+    sNineteenTo36 BYTE "19 to 36", 0
+    sEven BYTE "Even", 0
+    sOdd BYTE "Odd", 0
+    sRed BYTE "Red", 0
+    sBlack BYTE "Black", 0
     
 
 .code
 main PROC
+
 Roulette:
     ; Underscore Top Boundary
 	call RowOne
@@ -61,7 +62,7 @@ Roulette:
 
     ; Option Line 2
     call RowFourteen
-
+    exit
 main ENDP
 ; Major Blocks of Roulette
 ; Top Boundary
@@ -561,7 +562,7 @@ RowThirteen:
     call SetBlack
 
     call LeftBracket
-    mov edx, OFFSET first12
+    mov edx, OFFSET sFirst12
     call WriteString
     call RightBracket
 
@@ -569,7 +570,7 @@ RowThirteen:
     call MassWhiteSpace
 
     call LeftBracket
-    mov edx, OFFSET second12
+    mov edx, OFFSET sSecond12
     call WriteString
     call RightBracket
 
@@ -577,7 +578,7 @@ RowThirteen:
     call MassWhiteSpace
 
     call LeftBracket
-    mov edx, OFFSET third12
+    mov edx, OFFSET sThird12
     call WriteString
     call RightBracket
 
@@ -589,14 +590,14 @@ RowFourteen:
     call MassWhiteSpace
 
     call LeftBracket
-    mov edx, OFFSET oneTo18
+    mov edx, OFFSET sOneTo18
     call WriteString
     call RightBracket
 
     call WhiteSpace
 
     call LeftBracket
-    mov edx, OFFSET even
+    mov edx, OFFSET sEven
     call WriteString
     call RightBracket
 
@@ -604,14 +605,14 @@ RowFourteen:
     call MassWhiteSpace
 
     call LeftBracket
-    mov edx, OFFSET 
-    call WriteString black
+    mov edx, OFFSET sBlack
+    call WriteString 
     call RightBracket
 
     call WhiteSpace
 
     call LeftBracket
-    mov edx, OFFSET red
+    mov edx, OFFSET sRed
     call WriteString
     call RightBracket
 
@@ -619,14 +620,14 @@ RowFourteen:
     call MassWhiteSpace
 
     call LeftBracket
-    mov edx, OFFSET odd
+    mov edx, OFFSET sOdd
     call WriteString
     call RightBracket
 
     call WhiteSpace
 
     call LeftBracket
-    mov edx, OFFSET nineteenTo36
+    mov edx, OFFSET sNineteenTo36
     call WriteString
     call RightBracket
 
@@ -636,7 +637,7 @@ RowFourteen:
 TwoToOne:
     call WhiteSpace
     call LeftBracket
-    mov edx, OFFSET twoToOne
+    mov edx, OFFSET sTwoToOne
     call WriteString
     call RightBracket
 RedFill:
@@ -687,34 +688,34 @@ MassDash:
 ; Printing Characters
 Divider:
 	call SetBlack
-    mov edx, OFFSET VerticleBar
+    mov edx, OFFSET cVerticalBar
     call WriteString
 HashTag:
-	mov edx, OFFSET poundSign
+	mov edx, OFFSET cPoundSign
 	call WriteString
 UnderScore:
-	mov edx, OFFSET underScore
+	mov edx, OFFSET cUnderScore
 	call WriteString
 WhiteSpace:
-    mov edx, OFFSET space
+    mov edx, OFFSET cSpace
     call WriteString
 ForwardSlash:
     call SetBlack
-	mov edx, OFFSET forwardSlash
+	mov edx, OFFSET cForwardSlash
     call WriteChar
 BackSlash:
     call SetBlack
-	mov edx, OFFSET backSlash
+	mov edx, OFFSET cBackSlash
     call WriteChar
 LeftBracket:
     call SetBlack
-    mov edx, OFFSET forwardBracket
+    mov edx, OFFSET cForwardBracket
     call WriteChar
 RightBracket:
-    mov edx, OFFSET backBracket
+    mov edx, OFFSET cBackBracket
     call WriteChar
 Dash:
-    mov edx, OFFSET dash 
+    mov edx, OFFSET cDash 
     call WriteChar
 
 ; Setting Colors
@@ -722,7 +723,7 @@ SetBlack:
     mov eax, blackOnGreen
     call SetTextColor
 SetRed:
-	move eax, redOnGreen
+	mov eax, redOnGreen
 	call SetTextColor
 SetGray:
 	mov eax, grayOnGreen
