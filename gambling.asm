@@ -110,6 +110,10 @@ BigLoop:
       je SlotsLoop
       cmp al, 'S'      ; uppercase S
       je SlotsLoop
+      cmp ah, 'R'       ; roulete
+      je RouletteLoop
+      cmp al, 'r'
+      je RouletteLoop
       cmp al, 'l'
       je exitCasino
       cmp al, 'L'
@@ -382,6 +386,15 @@ PlayAgainPrompt:
     cmp al, 72h ; r
     je BigLoop
     jmp PlayAgainPrompt
+
+
+RouletteLoop:
+   call Clrscr
+
+
+
+
+
 ExitCasino:
     exit
 main ENDP
