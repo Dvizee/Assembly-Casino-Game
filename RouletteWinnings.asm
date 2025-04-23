@@ -156,9 +156,7 @@ OneThirdChance:
    ; Implement the "do you want to play again" loop here
    call PlayAgainPrompt
 
-; IMPROVMENTNEEDED
-PlayAgainPrompt:
-   exit
+
 
 
 ; Checks the length of the string
