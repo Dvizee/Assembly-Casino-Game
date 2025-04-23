@@ -8,7 +8,8 @@ INCLUDE Irvine32.inc
    
    bettingMethodPrompt BYTE "What would you like to bet on?: ", 0
    
-   bettingMethod BYTE 128 DUP(0)
+   MAX = 79
+   bettingMethod BYTE MAX+1 DUP(?)
 
    ; all your “named” bets here:
    choiceRed     BYTE "red",0
@@ -20,9 +21,8 @@ INCLUDE Irvine32.inc
    choice3rd12   BYTE "3rd 12",0
    choice1to18   BYTE "1 to 18",0
    choice19to36  BYTE "19 to 36",0
-   choice2to1    BYTE "2 to 1",0
 
-   invalidNumberString BYTE "Invalid number!", 0
+   invalidString BYTE "Invalid String", 0
    nullString BYTE "There are no strings here", 0
    numberMatch BYTE "Number Matched", 0
    
@@ -46,8 +46,7 @@ INCLUDE Irvine32.inc
    numberPrize BYTE "$80,000", 0
    halfChancePrize BYTE '$5000', 0
    thirdChancePrize BYTE '$15000', 0
-
-
+   
 .code 
 main PROC
    ; Generates Winning number for the round
@@ -64,26 +63,26 @@ RandomNumberGeneration:
    mov winningNumber, eax
    ret
 TakeInput:
+   ; IMPROVMENTNEEDED
+   ; If you can fix ReadString, think about implementing a player set betting amount
    mov edx, OFFSET bettingMethodPrompt
    call WriteString
 
    mov edx, OFFSET winningNumber
    call WriteInt
-
+   ; IMPROVMENTNEEDED
+   ; ReadString is only reading the first letter of the input
    mov   edx, OFFSET bettingMethod
-   mov   ecx, 127
+   mov ecx, MAX
    call  ReadString
    ret
-
-
-
-
 CheckBettingMethod:
    Invoke Str_compare, ADDR winningNumber, ADDR bettingMethod
    je CheckLength
+   ; If the player guessed wrong
    mov edx, OFFSET loss
    call WriteString
-   exit
+   call PlayAgainPrompt
 CheckLength:
    mov esi, OFFSET bettingMethod
    xor ecx, ecx
@@ -95,7 +94,6 @@ CountLoop:
    je LengthDone
    inc ecx
    jmp CountLoop
-
 LengthDone:
    cmp ecx, 1
    jl LessThanOne
@@ -105,7 +103,6 @@ LengthDone:
    jl LessThanThree
 
    call CheckValidString
-
 CheckValidString:
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceRed
@@ -116,7 +113,30 @@ CheckValidString:
    je HalfChance
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceOdd
    je HalfChance
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice1to18
+   je HalfChance
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice19to36
+   je HalfChance
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice1st12
+   je OneThirdChance
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice2nd12
+   je OneThirdChance
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice3rd12
+   je OneThirdChance
+
+   call InvalidInputLoop
    
+; Winning Results
+
+
+NumberedSlotWin:
+   mov edx, OFFSET win
+   call WriteString
+   call Crlf
+   mov edx, OFFSET numberPrize
+   call WriteString
+   ; Implement the "do you want to play again" loop here
+   call PlayAgainPrompt
 
 HalfChance:
    mov edx, OFFSET win
@@ -125,17 +145,20 @@ HalfChance:
    mov edx, OFFSET halfChancePrize
    call WriteString
    ; Implement the "do you want to play again" loop here
+   call PlayAgainPrompt
+
+OneThirdChance:
+   mov edx, OFFSET win
+   call WriteString
+   call Crlf
+   mov edx, OFFSET thirdChancePrize
+   call WriteString
+   ; Implement the "do you want to play again" loop here
+   call PlayAgainPrompt
+
+; IMPROVMENTNEEDED
+PlayAgainPrompt:
    exit
-
-
-
-
-
-
-
-
-
-
 
 
 ; Checks the length of the string
@@ -158,7 +181,7 @@ LessThanThree:
    cmp al, [three]
    je ValidFirstDigit
 
-   call InvalidNumber
+   call InvalidInputLoop
    
 ValidFirstDigit:
    mov al, [bettingMethod + 1]
@@ -184,13 +207,10 @@ ValidFirstDigit:
    cmp al, [nine]
    je NumberedSlotWin
 
-   call InvalidNumber
+   call InvalidInputLoop
 
 LessThanTwo:
-   ; IDK if we even need this line, it is only here to offset edx
    mov edx, OFFSET choiceRed
-   
-
    call ZeroWinConditions
    call MatchCall
 
@@ -223,7 +243,8 @@ LessThanTwo:
    call MatchCall
 
    ; It is not a valid character
-   call InvalidNumber
+   call InvalidInputLoop
+
 ZeroWinConditions:
    INVOKE Str_compare, ADDR bettingMethod, ADDR zero
    je NumberMatched
@@ -289,29 +310,21 @@ CopyDone:
    ret
 
 
-; Winning Results
 
-
-NumberedSlotWin:
-   mov edx, OFFSET win
-   call WriteString
-   call Crlf
-   mov edx, OFFSET numberPrize
-   call WriteString
-   ; Implement the "do you want to play again" loop here
-   exit
 
 ; Input Errors, loop back to ask for input again
-InvalidNumber:
-   mov edx, OFFSET invalidNumberString
+InvalidMSG:
+   mov edx, OFFSET invalidString
    call WriteString
    ; Temperary Exit for debugging
    exit
+
+; IMPROVMENTNEEDED
 InvalidInputLoop:
    ; This needs to tell them it is an invalid input, wait for them to press a key 
    ; And prompt that it is waiting, and then loop to asking for input if it is 
    ; Not a valid input
-   
+   call InvalidMSG
    ; Temperary exit for debugging
    exit
 

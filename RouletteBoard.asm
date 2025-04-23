@@ -17,7 +17,6 @@ INCLUDE Irvine32.inc
     cDash BYTE '-', 0
 
     ; Strings
-    sTwoToOne BYTE "2 to 1", 0
     sFirst12 BYTE "1st 12", 0
     sSecond12 BYTE "2nd 12", 0
     sThird12 BYTE "3rd 12", 0
@@ -205,7 +204,7 @@ RowThree:
 
     call WhiteSpace
     call Divider
-    call TwoToOne
+
 
     call Crlf
     ret
@@ -384,7 +383,7 @@ RowSix:
 
     call WhiteSpace
     call Divider
-    call TwoToOne
+   
 
     call Crlf
     ret
@@ -531,7 +530,7 @@ RowNine:
 
     call WhiteSpace
     call Divider
-    call TwoToOne
+    
 
     call Crlf
     ret
@@ -657,13 +656,7 @@ RowFourteen:
     ret
 
 ;Printing Blocks of Characters
-TwoToOne:
-    call WhiteSpace
-    call LeftBracket
-    mov edx, OFFSET sTwoToOne
-    call WriteString
-    call RightBracket
-    ret
+
 RedFill:
 	call WhiteSpace
     call Divider
