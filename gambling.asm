@@ -16,7 +16,6 @@ INCLUDE Irvine32.inc
    casMsg  BYTE "Choose Your Game:", 0
    game1   BYTE "Press S for: Slots", 0
    game2   BYTE "Press R for: Roulette", 0
-   game3   BYTE "Press H for: Horse Betting", 0
    endMsg  BYTE "Press L to leave Casino", 0
    topMsg  BYTE "Press ENTER to Spin for $50", 0
    bar     BYTE "+-------------------------+", 0
@@ -26,6 +25,8 @@ INCLUDE Irvine32.inc
    pay3    BYTE "7 - 40 points", 0
    score   BYTE "Your Score: ", 0
    playAgainMsg BYTE "Play Again? (Play - P, Return - R): ", 0
+   leaveMsg   BYTE "You Left the Casino with $", 0
+   urBrokeMsg BYTE "You Can't Afford to Spin", 0
    ; Data for RouletteBoard
    ; Colors
    blackOnGreen DWORD 20h 
@@ -51,9 +52,31 @@ INCLUDE Irvine32.inc
    sOdd BYTE "Odd", 0
    sRed BYTE "Red", 0
    sBlack BYTE "Black", 0
+    ; Roulette betting options
+    bettingMethodPrompt BYTE "What would you like to bet on?: ", 0
+    MAX = 79
+    bettingMethod BYTE MAX+1 DUP(?)
+    choiceRed     BYTE "red", 0
+    choiceBlack   BYTE "black", 0
+    choiceEven    BYTE "even", 0
+    choiceOdd     BYTE "odd", 0
+    choice1st12   BYTE "1st 12", 0
+    choice2nd12   BYTE "2nd 12", 0
+    choice3rd12   BYTE "3rd 12", 0
+    choice1to18   BYTE "1 to 18", 0
+    choice19to36  BYTE "19 to 36", 0
+    invalidString BYTE "Invalid input.", 0
+    win           BYTE "You Won: ", 0
+    loss          BYTE "You Lost.", 0
+    winningNumber DWORD ?
+    currentGame DWORD ? ; Added so play again works
+    returnMsg     BYTE "Enter 0 to Return", 0
+    betAmountMsg  BYTE "Enter bet amount: $", 0
+    invalidBetMsg BYTE "Invalid Bet Amount", 0
+    currentBet DWORD ?
+
 .code
-main PROC
-BigLoop:
+BigLoop PROC
    call Clrscr
    call Randomize
    ; Draws the casino sign
@@ -104,12 +127,8 @@ BigLoop:
    mov ecx, 13
    call GotoxyAtLine
    call WriteString
-   mov edx, OFFSET game3
-   mov ecx, 14
-   call GotoxyAtLine
-   call WriteString
    mov edx, OFFSET endMsg
-   mov ecx, 16
+   mov ecx, 15
    call GotoxyAtLine
    call WriteString
    WaitForGame:
@@ -127,9 +146,12 @@ BigLoop:
       cmp al, 'L'
       je exitCasino
       jmp WaitForGame  ; ignore all other keys
-SlotsLoop:
+
+ret
+BigLoop ENDP
+
+SlotsLoop PROC
    ; Prints header/ insturctions
-   sub money, 50
    call Clrscr
    mov edx, OFFSET topMsg
    mov ecx, 2
@@ -216,7 +238,10 @@ SlotsLoop:
       cmp al, 0Dh       ; Check if enter was pressed
       jne WaitForSpin   ; If not, keep waiting
     ; spin animation for slot 1
-    mov ecx, 15     ; 15 loops
+   cmp money, 50
+   jl brokie
+   sub money, 50
+   mov ecx, 15     ; 15 loops
    SpinLoop:
       mov eax, 3
       call RandomRange
@@ -341,25 +366,32 @@ PrintScore:
    mov ecx, 18
    call GotoxyAtLine
    call WriteString
-PlayAgainPrompt:
-   call ReadChar
-   cmp al, 50h ; P
-   je SlotsLoop
-   cmp al, 70h ; p
-   je SlotsLoop
-   cmp al, 52h ; R
-   je BigLoop
-   cmp al, 72h ; r
-   je BigLoop
-   jmp PlayAgainPrompt
+   mov currentGame, 1
+   call PlayAgainPrompt
+
+   ret
+brokie:
+   mov edx, OFFSET urBrokeMsg
+   mov ecx, 15
+   call GotoxyAtLine
+   call WriteString
+   call Crlf
+   call WaitMsg
+   jmp BigLoop
+SlotsLoop ENDP
 ; IMPROVMENTNEEDED
-RouletteLoop:
+RouletteLoop PROC
    call Clrscr
    call RouletteBoard
    ; Be Careful bringing RouletteWinnings.asm over as it may share 
    ; some function names
+   mov eax, white
+   call SetTextColor
+   call Crlf
    call RouletteGameplay
    call PlayAgainPrompt
+   ret
+RouletteLoop ENDP
 RouletteBoard:
    call RowOne
    ; Number Line One
@@ -383,6 +415,7 @@ RouletteBoard:
    ; Option Line 2
    call RowFourteen
    ret
+
 ; Major Blocks of Roulette
 ; Top Boundary
 RowOne:
@@ -988,9 +1021,320 @@ SetGray:
 	mov eax, grayOnGreen
 	call SetTextColor
    ret
+
+   RouletteGameplay PROC
+   ; Check if user has enough money to play
+   ;cmp money, 50
+   ;jl NotEnoughMoney
+   ;sub money, 50
+
+   mov edx, OFFSET balMsg
+   call WriteString
+   mov eax, money
+   call WriteDec
+   call Crlf
+
+   mov edx, OFFSET returnMsg   ; "Enter 0 to Return"
+   call WriteString
+   call Crlf
+   call Crlf
+
+   mov edx, OFFSET betAmountMsg  ; "Enter bet amount: $"
+   call WriteString
+   call ReadInt                  ; Player inputs bet (stored in EAX)
+   jc InvalidBet  
+   
+   cmp eax, 0
+   je BigLoop
+   cmp eax, 0
+   jle InvalidBet                ; Bet must be > 0
+   cmp eax, money
+   jg NotEnoughMoney       
+
+   mov currentBet, eax
+   sub money, eax
+
+   call Randomize
+   call RandomNumberGeneration
+   call GetBetInput
+
+   ret
+
+NotEnoughMoney:
+   mov edx, OFFSET invalidString
+   call WriteString
+   call Crlf
+   call Crlf
+   mov eax, 2
+   call PlayAgainPrompt
+   ret
+
+InvalidBet:
+    mov edx, OFFSET invalidBetMsg 
+    call WriteString
+    call Crlf
+    jmp RouletteGameplay          
+RouletteGameplay ENDP
+
+GetBetInput PROC
+   mov edx, OFFSET bettingMethodPrompt
+   call WriteString
+   mov edx, OFFSET bettingMethod
+   mov ecx, MAX
+   call ReadString
+
+   call CheckBettingMethod
+   ret
+GetBetInput ENDP
+
+
+RandomNumberGeneration PROC
+   mov eax, 37
+   call RandomRange
+   mov winningNumber, eax
+   ret
+RandomNumberGeneration ENDP
+
+CheckBettingMethod PROC
+    ; First check half-chance bets
+    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceRed
+    je  CheckRed
+    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceBlack
+    je  CheckRed
+    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceEven
+    je  CheckEven
+    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceOdd
+    je  CheckOdd
+    INVOKE Str_compare, ADDR bettingMethod, ADDR choice1to18
+    je  Check1To18
+    INVOKE Str_compare, ADDR bettingMethod, ADDR choice19to36
+    je  Check19To36
+
+    ; Then check one-third bets
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice1st12
+   je CheckFirst12
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice2nd12
+   je CheckSecond12
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice3rd12
+   je CheckThird12
+
+  jmp InvalidInputLoop
+
+
+CheckRed:
+    call IsRed
+    jc HalfChance
+    jmp LostBet
+
+CheckBlack:
+    call IsRed
+    jnc HalfChance
+    jmp LostBet
+
+CheckEven:
+    mov eax, winningNumber
+    test eax, 1
+    jz HalfChance    ; If zero flag set, number is even
+    jmp LostBet
+
+CheckOdd:
+    mov eax, winningNumber
+    test eax, 1
+    jnz HalfChance   ; If zero flag not set, number is odd
+    jmp LostBet
+
+Check1To18:
+    mov eax, winningNumber
+    cmp eax, 1
+    jb LostBet
+    cmp eax, 18
+    ja LostBet
+    jmp HalfChance
+
+Check19To36:
+    mov eax, winningNumber
+    cmp eax, 19
+    jb LostBet
+    cmp eax, 36
+    ja LostBet
+    jmp HalfChance
+
+CheckBettingMethod ENDP
+
+IsRed PROC
+    mov eax, winningNumber
+    ; Roulette red numbers: 1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36
+    cmp eax, 1
+    je IsRedTrue
+    cmp eax, 3
+    je IsRedTrue
+    cmp eax, 5
+    je IsRedTrue
+    cmp eax, 7
+    je IsRedTrue
+    cmp eax, 9
+    je IsRedTrue
+    cmp eax, 12
+    je IsRedTrue
+    cmp eax, 14
+    je IsRedTrue
+    cmp eax, 16
+    je IsRedTrue
+    cmp eax, 18
+    je IsRedTrue
+    cmp eax, 19
+    je IsRedTrue
+    cmp eax, 21
+    je IsRedTrue
+    cmp eax, 23
+    je IsRedTrue
+    cmp eax, 25
+    je IsRedTrue
+    cmp eax, 27
+    je IsRedTrue
+    cmp eax, 30
+    je IsRedTrue
+    cmp eax, 32
+    je IsRedTrue
+    cmp eax, 34
+    je IsRedTrue
+    cmp eax, 36
+    je IsRedTrue
+    clc    ; Clear carry flag = not red
+    ret
+    
+IsRedTrue:
+    stc    ; Set carry flag = is red
+    ret
+IsRed ENDP
+
+CheckFirst12 PROC
+    mov eax, winningNumber
+    cmp eax, 1
+    jb LostBet
+    cmp eax, 12
+    ja LostBet
+    call OneThirdChance
+    ret
+CheckFirst12 ENDP
+
+CheckSecond12 PROC
+    mov eax, winningNumber
+    cmp eax, 13
+    jb LostBet
+    cmp eax, 24
+    ja LostBet
+    call OneThirdChance
+    ret
+CheckSecond12 ENDP
+
+CheckThird12 PROC
+    mov eax, winningNumber
+    cmp eax, 25
+    jb LostBet
+    cmp eax, 36
+    ja LostBet
+    call OneThirdChance
+    ret
+CheckThird12 ENDP
+
+LostBet PROC
+   mov edx, OFFSET loss
+   call WriteString
+   call Crlf
+   call Crlf
+   mov edx, OFFSET playAgainMsg
+   call WriteString
+   mov currentGame, 2
+   call PlayAgainPrompt
+   ret
+LostBet ENDP
+
+
+HalfChance PROC
+   mov edx, OFFSET win
+   call WriteString
+   mov eax, currentBet
+   call WriteDec       ; Display amount won
+
+   add money, eax     ; Return original bet
+   add money, eax     ; Add profit (total: +bet)
+
+   call Crlf
+   
+   call Crlf
+   mov edx, OFFSET playAgainMsg
+   call WriteString
+   mov currentGame, 2
+   call PlayAgainPrompt
+   ret
+HalfChance ENDP
+
+OneThirdChance PROC
+   mov edx, OFFSET win
+   call WriteString
+   mov eax, currentBet
+   shl eax, 1 
+   call WriteDec
+   mov ebx, currentBet
+   add money, ebx
+   add money, eax
+   call Crlf
+   mov edx, OFFSET balMsg
+   call WriteString
+   mov eax, money
+   call WriteDec
+   call Crlf
+   mov edx, OFFSET playAgainMsg
+   call WriteString
+   mov currentGame, 2
+   call PlayAgainPrompt
+   ret
+OneThirdChance ENDP
+
+
+InvalidInputLoop PROC
+   mov edx, OFFSET invalidString
+   call WriteString
+   call Crlf
+   call Crlf
+   jmp GetBetInput
+   ret
+InvalidInputLoop ENDP
+
+PlayAgainPrompt PROC
+   call ReadChar
+   cmp al, 'P'
+   je PlayAgain
+   cmp al, 'p'
+   je PlayAgain
+   cmp al, 'R'
+   je BigLoop
+   cmp al, 'r'
+   je BigLoop
+   jmp PlayAgainPrompt
+
+PlayAgain:
+   cmp currentGame, 1
+   je SlotsLoop
+   cmp currentGame, 2
+   je RouletteLoop
+   jmp BigLoop ; fallback
+   ret
+PlayAgainPrompt ENDP
+
+
 ExitCasino:
+   call Crlf
+   call Crlf
+   mov edx, OFFSET leaveMsg
+   call WriteString
+   mov eax, money
+   call WriteDec
+   call Crlf
+
    exit
-main ENDP
+
 GotoxyAtLine PROC
    ; Assumes that edx = message and ecx = row
    push dx
@@ -1005,4 +1349,4 @@ GotoxyXY PROC
    call Gotoxy
    ret
 GotoxyXY ENDP
-END main
+END BigLoop
