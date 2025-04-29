@@ -1303,13 +1303,15 @@ NotEnoughMoney:
    ret
 
 ; If bet isnt a valid bet amoount, tell them and reprompt
-InvalidBet:
+
+RouletteGameplay ENDP
+
+InvalidBet PROC
     mov edx, OFFSET invalidBetMsg 
     call WriteString
     call Crlf
     jmp RouletteGameplay
-RouletteGameplay ENDP
-
+InvalidBet ENDP
 
 GetBetInput PROC
    ; Next 2 lines asks user how they want to bet
@@ -1480,7 +1482,7 @@ CheckBettingMethod PROC
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThirtySix
    je CheckThirtySix
 
-  jmp InvalidInputLoop
+  jmp InvalidBet
 
 CheckZero:
    mov eax, 0
