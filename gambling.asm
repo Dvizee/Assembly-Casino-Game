@@ -1546,9 +1546,11 @@ GotoxyAtLine PROC
    pop dx
    ret
 GotoxyAtLine ENDP
+
 GotoxyXY PROC
    ; Assumes that dl = column (x) and dh = row (y)
    call Gotoxy
    ret
 GotoxyXY ENDP
+
 END BigLoop
