@@ -1815,7 +1815,7 @@ HalfChance PROC
    ;call WriteDec       ; Display amount won
 
    mov ebx, currentBet ; Moves the betting amount into ebx
-   imul ebx, ebx, 10    ; Multiplies the bet by ten
+   imul ebx, ebx, 2    ; Multiplies the bet by ten
    add money, ebx      ; Adds it to the balance
    mov eax, ebx
    call WriteDec
@@ -1840,7 +1840,7 @@ OneThirdChance PROC
 
    mov ebx, currentBet
    mov ebx, currentBet ; Moves the betting amount into ebx
-   imul ebx, ebx, 10    ; Multiplies the bet by fifteen
+   imul ebx, ebx, 3    ; Multiplies the bet by fifteen
    add money, ebx      ; Adds it to the balance
    mov eax, ebx
    call WriteDec
