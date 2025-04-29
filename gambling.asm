@@ -53,13 +53,13 @@ INCLUDE Irvine32.inc
    MAX = 79
    bettingMethod BYTE MAX+1 DUP(?)
    choiceRed     BYTE "Red", 0
-   choicered     BYTE "red", 0
+   lowerRed      BYTE "red", 0
    choiceBlack   BYTE "Black", 0
-   choiceblack   BYTE "black", 0
+   lowerBlack    BYTE "black", 0
    choiceEven    BYTE "Even", 0
-   choiceeven    BYTE "even", 0
+   lowerEven     BYTE "even", 0
    choiceOdd     BYTE "Odd", 0
-   choiceodd     BYTE "odd", 0
+   lowerOdd      BYTE "odd", 0
    choice1st12   BYTE "1st 12", 0
    choice2nd12   BYTE "2nd 12", 0
    choice3rd12   BYTE "3rd 12", 0
@@ -1294,22 +1294,22 @@ CheckBettingMethod PROC
    ; First check half-chance bets
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceRed
    je  CheckRed
-   INVOKE Str_compare, ADDR bettingMethod, ADDR choicered
+   INVOKE Str_compare, ADDR bettingMethod, ADDR lowerRed
    je  CheckRed
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceBlack
    je  CheckBlack
-   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceblack
+   INVOKE Str_compare, ADDR bettingMethod, ADDR lowerBlack
    je  CheckBlack
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceEven
    je  CheckEven
-   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceeven
+   INVOKE Str_compare, ADDR bettingMethod, ADDR lowerEven
    je  CheckEven
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceOdd
    je  CheckOdd
-   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceodd
+   INVOKE Str_compare, ADDR bettingMethod, ADDR lowerOdd
    je  CheckOdd
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice1to18
