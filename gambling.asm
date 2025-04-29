@@ -53,9 +53,13 @@ INCLUDE Irvine32.inc
    MAX = 79
    bettingMethod BYTE MAX+1 DUP(?)
    choiceRed     BYTE "Red", 0
+   choicered     BYTE "red", 0
    choiceBlack   BYTE "Black", 0
+   choiceblack   BYTE "black", 0
    choiceEven    BYTE "Even", 0
+   choiceeven    BYTE "even", 0
    choiceOdd     BYTE "Odd", 0
+   choiceodd     BYTE "odd", 0
    choice1st12   BYTE "1st 12", 0
    choice2nd12   BYTE "2nd 12", 0
    choice3rd12   BYTE "3rd 12", 0
@@ -70,6 +74,7 @@ INCLUDE Irvine32.inc
    betAmountMsg  BYTE "Enter bet amount: $", 0
    invalidBetMsg BYTE "Invalid Bet Amount", 0
    currentBet DWORD ?
+   winningNumberScript BYTE "The winning number is: ", 0
 
 .code
 BigLoop PROC
@@ -1286,27 +1291,43 @@ RandomNumberGeneration PROC
 RandomNumberGeneration ENDP
 
 CheckBettingMethod PROC
-    ; First check half-chance bets
-    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceRed
-    je  CheckRed
-    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceBlack
-    je  CheckRed
-    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceEven
-    je  CheckEven
-    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceOdd
-    je  CheckOdd
-    INVOKE Str_compare, ADDR bettingMethod, ADDR choice1to18
-    je  Check1To18
-    INVOKE Str_compare, ADDR bettingMethod, ADDR choice19to36
-    je  Check19To36
+   ; First check half-chance bets
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceRed
+   je  CheckRed
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choicered
+   je  CheckRed
 
-    ; Then check one-third bets
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceBlack
+   je  CheckBlack
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceblack
+   je  CheckBlack
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceEven
+   je  CheckEven
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceeven
+   je  CheckEven
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceOdd
+   je  CheckOdd
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceodd
+   je  CheckOdd
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice1to18
+   je  Check1To18
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choice19to36
+   je  Check19To36
+
+   ; Then check one-third bets
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice1st12
    je CheckFirst12
+
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice2nd12
    je CheckSecond12
+
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice3rd12
    je CheckThird12
+
 
   jmp InvalidInputLoop
 
@@ -1429,6 +1450,8 @@ CheckThird12 PROC
 CheckThird12 ENDP
 
 LostBet PROC
+   call WinningNumberOutput
+
    mov edx, OFFSET loss
    call WriteString
    call Crlf
@@ -1442,6 +1465,8 @@ LostBet ENDP
 
 
 HalfChance PROC
+   call WinningNumberOutput
+
    mov edx, OFFSET win
    call WriteString
    ;mov eax, currentBet
@@ -1466,6 +1491,8 @@ HalfChance PROC
 HalfChance ENDP
 
 OneThirdChance PROC
+   call WinningNumberOutput
+
    mov edx, OFFSET win
    call WriteString
 
@@ -1491,7 +1518,13 @@ OneThirdChance PROC
    ret
 
 OneThirdChance ENDP
-
+WinningNumberOutput:
+   mov edx, OFFSET winningNumberScript
+   call WriteString
+   mov edx, OFFSET winningNumber
+   call WriteInt
+   call Crlf
+   ret
 
 InvalidInputLoop PROC
    mov edx, OFFSET invalidString
