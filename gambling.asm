@@ -48,16 +48,6 @@ INCLUDE Irvine32.inc
    cForwardBracket BYTE '[', 0
    cBackBracket BYTE ']', 0
    cDash BYTE '-', 0
-   ; Strings
-   sFirst12 BYTE "1st 12", 0
-   sSecond12 BYTE "2nd 12", 0
-   sThird12 BYTE "3rd 12", 0
-   sOneTo18 BYTE "1 to 18", 0
-   sNineteenTo36 BYTE "19 to 36", 0
-   sEven BYTE "Even", 0
-   sOdd BYTE "Odd", 0
-   sRed BYTE "Red", 0
-   sBlack BYTE "Black", 0
    ; Roulette betting options
    bettingMethodPrompt BYTE "What would you like to bet on?: ", 0
    MAX = 79
@@ -282,31 +272,6 @@ SlotsLoop PROC
    jl brokie
    sub money, 50
    mov ecx, 15     ; 15 loops
-   ; Prints first slot in the box
-   mov dl, 12
-   mov dh, 6
-   call GotoxyXY
-   mov al, slot1    
-   call WriteChar
-
-   ; spin animation for slot 2
-   mov ecx, 20     ; 20 loops
-   ; Prints second slot in the box
-   mov dl, 15
-   mov dh, 6
-   call GotoxyXY
-   mov al, slot2  
-   call WriteChar
-
-   ; spin animation for slot 3
-   mov ecx, 25     ; 25 loops
-   ; Prints third slot in the box
-   mov dl, 18
-   mov dh, 6
-   call GotoxyXY
-   mov al, slot3  
-   call WriteChar
-
    SpinLoop:
       mov eax, 3
       call RandomRange
@@ -319,7 +284,15 @@ SlotsLoop PROC
       call WriteChar
       call Delay      ; Delay so animation doesn't play too quick
       loop SpinLoop
+   ; Prints first slot in the box
+   mov dl, 12
+   mov dh, 6
+   call GotoxyXY
+   mov al, slot1    
+   call WriteChar
 
+   ; spin animation for slot 2
+   mov ecx, 20     ; 20 loops
    SpinLoop1:
       mov eax, 3
       call RandomRange
@@ -332,7 +305,15 @@ SlotsLoop PROC
       call WriteChar
       call Delay
       loop SpinLoop1
+   ; Prints second slot in the box
+   mov dl, 15
+   mov dh, 6
+   call GotoxyXY
+   mov al, slot2  
+   call WriteChar
 
+   ; spin animation for slot 3
+   mov ecx, 25     ; 25 loops
    SpinLoop2:
       mov eax, 3
       call RandomRange
@@ -345,6 +326,18 @@ SlotsLoop PROC
       call WriteChar
       call Delay
       loop SpinLoop2
+   ; Prints third slot in the box
+   mov dl, 18
+   mov dh, 6
+   call GotoxyXY
+   mov al, slot3  
+   call WriteChar
+
+   
+
+   
+
+   
 
    ; Prints score
    mov edx, OFFSET score
@@ -1012,7 +1005,7 @@ RowThirteen:
    call SetBlack
 
    call LeftBracket
-   mov edx, OFFSET sFirst12
+   mov edx, OFFSET choice1st12
    call WriteString
    call RightBracket
 
@@ -1020,7 +1013,7 @@ RowThirteen:
    call MassWhiteSpace
 
    call LeftBracket
-   mov edx, OFFSET sSecond12
+   mov edx, OFFSET choice2nd12
    call WriteString
    call RightBracket
 
@@ -1028,9 +1021,12 @@ RowThirteen:
    call MassWhiteSpace
 
    call LeftBracket
-   mov edx, OFFSET sThird12
+   mov edx, OFFSET choice3rd12
    call WriteString
    call RightBracket
+
+   mov ecx, 12
+   call MassWhiteSpace
 
    call Crlf
    ret
@@ -1041,14 +1037,14 @@ RowFourteen:
    call MassWhiteSpace
 
    call LeftBracket
-   mov edx, OFFSET sOneTo18
+   mov edx, OFFSET choice1to18
    call WriteString
    call RightBracket
 
    call WhiteSpace
 
    call LeftBracket
-   mov edx, OFFSET sEven
+   mov edx, OFFSET choiceEven
    call WriteString
    call RightBracket
 
@@ -1056,14 +1052,14 @@ RowFourteen:
    call MassWhiteSpace
 
    call LeftBracket
-   mov edx, OFFSET sBlack
+   mov edx, OFFSET choiceBlack
    call WriteString 
    call RightBracket
 
    call WhiteSpace
 
    call LeftBracket
-   mov edx, OFFSET sRed
+   mov edx, OFFSET choiceRed
    call WriteString
    call RightBracket
 
@@ -1071,16 +1067,19 @@ RowFourteen:
    call MassWhiteSpace
 
    call LeftBracket
-   mov edx, OFFSET sOdd
+   mov edx, OFFSET choiceOdd
    call WriteString
    call RightBracket
 
    call WhiteSpace
 
    call LeftBracket
-   mov edx, OFFSET sNineteenTo36
+   mov edx, OFFSET choice19to36
    call WriteString
    call RightBracket
+
+   mov ecx, 5
+   call MassWhiteSpace
 
    call Crlf
    ret
