@@ -1892,7 +1892,7 @@ OneInThirtySevenChange ENDP
 WinningNumberOutput:
    mov edx, OFFSET winningNumberScript
    call WriteString
-   mov edx, OFFSET winningNumber
+   mov eax, [winningNumber]
    call WriteDec
    call Crlf
    ret
