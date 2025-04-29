@@ -1267,6 +1267,7 @@ RouletteGameplay PROC
    call Crlf
    call Crlf
 
+BetThisMuch:                     ; I had to add this so that NotEnoughMoney could jump here
    mov edx, OFFSET betAmountMsg  ; "Enter bet amount: $"
    call WriteString
    call ReadInt                  ; This value is stored in eax
@@ -1298,7 +1299,7 @@ NotEnoughMoney:
    call Crlf
    call Crlf
    mov eax, 2
-   call PlayAgainPrompt
+   jmp BetThisMuch
    ret
 
 ; If bet isnt a valid bet amoount, tell them and reprompt
