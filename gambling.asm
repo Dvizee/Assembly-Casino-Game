@@ -1256,14 +1256,9 @@ SetGray:
 
 ; Roulette Gameplay Logic
 RouletteGameplay PROC
-   ; Check if user has enough money to play
-   ;cmp money, 50
-   ;jl NotEnoughMoney
-   ;sub money, 50
-
    mov edx, OFFSET balMsg
    call WriteString
-   mov eax, money
+   mov eax, money     ; prints out user current balance
    call WriteDec
    call Crlf
 
@@ -1274,25 +1269,29 @@ RouletteGameplay PROC
 
    mov edx, OFFSET betAmountMsg  ; "Enter bet amount: $"
    call WriteString
-   call ReadInt                  ; Player inputs bet (stored in EAX)
-   jc InvalidBet  
+   call ReadInt                  ; This value is stored in eax
+   jc InvalidBet                 ; If input invalid, jmp to InvalidBet
    
    cmp eax, 0
-   je BigLoop
+   je BigLoop                    ; Sends user back to main menu if they enter 0
    cmp eax, 0
-   jle InvalidBet                ; Bet must be > 0
+   jle InvalidBet                ; Reprompts if number is less than 0
    cmp eax, money
-   jg NotEnoughMoney       
+   jg NotEnoughMoney             ; And repromps if user cant afford bet
 
+   ; If bet valid than accept it and take it out of user balance
    mov currentBet, eax
    sub money, eax
 
    call Randomize
+   ; This determines the winning number of roulette
    call RandomNumberGeneration
+   ; GetBetInput gets betting method from user
    call GetBetInput
 
    ret
 
+; If user can't afford bet, tell them and reprompt bet amount
 NotEnoughMoney:
    mov edx, OFFSET invalidString
    call WriteString
@@ -1302,26 +1301,27 @@ NotEnoughMoney:
    call PlayAgainPrompt
    ret
 
+; If bet isnt a valid bet amoount, tell them and reprompt
 InvalidBet:
     mov edx, OFFSET invalidBetMsg 
     call WriteString
     call Crlf
     jmp RouletteGameplay
-
 RouletteGameplay ENDP
 
+
 GetBetInput PROC
+   ; Next 2 lines asks user how they want to bet
    mov edx, OFFSET bettingMethodPrompt
    call WriteString
    mov edx, OFFSET bettingMethod
    mov ecx, MAX
-   call ReadString
-
-   call CheckBettingMethod
+   call ReadString          ; reads user bet
+   call CheckBettingMethod  ; Checks if bet type is valid
    ret
 GetBetInput ENDP
 
-
+; Gets random number between 0 and 36 for the winning number
 RandomNumberGeneration PROC
    mov eax, 37
    call RandomRange
@@ -1332,41 +1332,42 @@ RandomNumberGeneration ENDP
 CheckBettingMethod PROC
    ; First check half-chance bets
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceRed
-   je  CheckRed
+   je  CheckRed ; Red
    INVOKE Str_compare, ADDR bettingMethod, ADDR lowerRed
-   je  CheckRed
+   je  CheckRed ; red
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceBlack
-   je  CheckBlack
+   je  CheckBlack ; Black
    INVOKE Str_compare, ADDR bettingMethod, ADDR lowerBlack
-   je  CheckBlack
+   je  CheckBlack ; black
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceEven
-   je  CheckEven
+   je  CheckEven ; Even
    INVOKE Str_compare, ADDR bettingMethod, ADDR lowerEven
-   je  CheckEven
+   je  CheckEven ; even
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceOdd
-   je  CheckOdd
+   je  CheckOdd ; Odd
    INVOKE Str_compare, ADDR bettingMethod, ADDR lowerOdd
-   je  CheckOdd
+   je  CheckOdd ; odd
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice1to18
-   je  Check1To18
+   je  Check1To18 ; 1 to 18
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice19to36
-   je  Check19To36
+   je  Check19To36 ; 19 to 36
 
    ; Then check one-third bets
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice1st12
-   je CheckFirst12
+   je CheckFirst12 ; 1st 12
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice2nd12
-   je CheckSecond12
+   je CheckSecond12 ; 2nd 12
 
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice3rd12
-   je CheckThird12
+   je CheckThird12 ; 3rd 12
 
+   ; Now checks each number individually
    INVOKE Str_compare, ADDR bettingMethod, ADDR choiceZero
    je CheckZero
 
@@ -1666,11 +1667,13 @@ CheckThirtySix:
    je OneInThirtySevenChange
    call LostBet
 
+; Checks if winning number is a red number
 CheckRed:
    call IsRed
    jc HalfChance
    jmp LostBet
 
+; Checks if winning number is a black number
 CheckBlack:
    call IsRed
    jnc HalfChance
@@ -1679,23 +1682,25 @@ CheckBlack:
 CheckEven:
    mov eax, winningNumber
    test eax, 1
-   jz HalfChance    ; If zero flag set, number is even
+   jz HalfChance    ; If the zero flag set, its even
    jmp LostBet
 
 CheckOdd:
    mov eax, winningNumber
    test eax, 1
-   jnz HalfChance   ; If zero flag not set, number is odd
+   jnz HalfChance   ; If the zero flag is not set, its odd
    jmp LostBet
 
+; Checks if winning number is between 1 and 18
 Check1To18:
    mov eax, winningNumber
    cmp eax, 1
-   jb LostBet
+   jb LostBet       ; Jumps to won half chance bet if won
    cmp eax, 18
-   ja LostBet
-   jmp HalfChance
+   ja LostBet       ; Jumps to lost bet if won
+   jmp HalfChance   ; Jumps to won half chance bet if won
 
+; Checks if winning number is between 19 and 36
 Check19To36:
    mov eax, winningNumber
    cmp eax, 19
@@ -1745,14 +1750,15 @@ IsRed PROC
    je IsRedTrue
    cmp eax, 36
    je IsRedTrue
-   clc    ; Clear carry flag = not red
+   clc    ; Clears the carry flag if its not red
    ret
     
 IsRedTrue:
-   stc    ; Set carry flag = is red
+   stc    ; Sets the carry flag if its red
    ret
 IsRed ENDP
 
+; Checks if winning number is in first 12
 CheckFirst12 PROC
    mov eax, winningNumber
    cmp eax, 1
@@ -1763,6 +1769,7 @@ CheckFirst12 PROC
    ret
 CheckFirst12 ENDP
 
+; Checks if winning number is in second 12
 CheckSecond12 PROC
    mov eax, winningNumber
    cmp eax, 13
@@ -1773,6 +1780,7 @@ CheckSecond12 PROC
    ret
 CheckSecond12 ENDP
 
+; Checks if winning number is in third 12
 CheckThird12 PROC
    mov eax, winningNumber
    cmp eax, 25
@@ -1783,6 +1791,7 @@ CheckThird12 PROC
    ret
 CheckThird12 ENDP
 
+; If the bet is lost, tell user and prompt to play again
 LostBet PROC
    call WinningNumberOutput
 
@@ -1796,7 +1805,6 @@ LostBet PROC
    call PlayAgainPrompt
    ret
 LostBet ENDP
-
 
 HalfChance PROC
    call WinningNumberOutput
@@ -1851,6 +1859,8 @@ OneThirdChance PROC
 
    ret
 OneThirdChance ENDP
+
+
 OneInThirtySevenChange PROC
    call WinningNumberOutput
 
@@ -1887,6 +1897,7 @@ WinningNumberOutput:
    call Crlf
    ret
 
+; If user types an invalid bet type, print error message and reprompt
 InvalidInputLoop PROC
    mov edx, OFFSET invalidString
    call WriteString
@@ -1894,31 +1905,33 @@ InvalidInputLoop PROC
    call Crlf
    jmp GetBetInput
    ret
-   
 InvalidInputLoop ENDP
 
+
+; Play again prompt used for both slots and roulette
 PlayAgainPrompt PROC
    call ReadChar
-   cmp al, 'P'
+   cmp al, 'P'   ; P for play again
    je PlayAgain
    cmp al, 'p'
    je PlayAgain
-   cmp al, 'R'
+   cmp al, 'R'   ; R for return
    je BigLoop
    cmp al, 'r'
    je BigLoop
    jmp PlayAgainPrompt
 
+; Before we call play again prompt, we update currentGame
 PlayAgain:
    cmp currentGame, 1
    je SlotsLoop
    cmp currentGame, 2
    je RouletteLoop
-   jmp BigLoop ; fallback
+   jmp BigLoop ; If currentGame is nott updated, itll just return
    ret
 PlayAgainPrompt ENDP
 
-
+; When user leaves casino, print leave message and final balance
 ExitCasino:
    call Crlf
    call Crlf
@@ -1927,7 +1940,6 @@ ExitCasino:
    mov eax, money
    call WriteDec
    call Crlf
-
    exit
 
 GotoxyAtLine PROC
