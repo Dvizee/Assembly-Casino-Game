@@ -1310,7 +1310,7 @@ InvalidBet PROC
     mov edx, OFFSET invalidBetMsg 
     call WriteString
     call Crlf
-    jmp RouletteGameplay
+    jmp GetBetInput
 InvalidBet ENDP
 
 GetBetInput PROC
