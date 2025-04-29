@@ -65,6 +65,44 @@ INCLUDE Irvine32.inc
    choice3rd12   BYTE "3rd 12", 0
    choice1to18   BYTE "1 to 18", 0
    choice19to36  BYTE "19 to 36", 0
+   ; Individual Numbers
+   choiceZero BYTE "0", 0
+   choiceOne     BYTE "1", 0
+   choiceTwo BYTE "2", 0
+   choiceThree BYTE "3", 0
+   choiceFour BYTE "4", 0
+   choiceFive BYTE "5", 0
+   choiceSix BYTE "6", 0
+   choiceSeven BYTE "7", 0
+   choiceEight BYTE "8", 0
+   choiceNine BYTE "9", 0
+   choiceTen BYTE "10", 0
+   choiceEleven BYTE "11", 0
+   choiceTwelve BYTE "12", 0
+   choiceThirteen BYTE "13", 0
+   choiceFourteen BYTE "14", 0
+   choiceFifteen BYTE "15", 0
+   choiceSixteen BYTE "16", 0
+   choiceSeventeen BYTE "17", 0
+   chouceEighteen BYTE "18", 0
+   choiceNineTeen BYTE "19", 0
+   choiceTwenty BYTE "20", 0
+   choiceTwentyOne BYTE "21", 0
+   choiceTwentyTwo BYTE "22", 0
+   choiceTwentyThree BYTE "23", 0
+   choiceTwentyFour BYTE "24", 0
+   choiceTwentyFive BYTE "25", 0
+   choiceTwentySix BYTE "26", 0
+   choiceTwentySeven BYTE "27", 0
+   choiceTwentyEight BYTE "28", 0
+   choiceTwentyNine BYTE "29", 0
+   choiceThirty BYTE "30", 0
+   choiceThirtyOne BYTE "31", 0
+   choiceThirtyTwo BYTE "32", 0
+   choiceThirtyThree BYTE "33", 0
+   choiceThirtyFour BYTE "34", 0
+   choiceThirtyFive BYTE "35", 0
+   choiceThirtySix BYTE "36", 0
    invalidString BYTE "Invalid input.", 0
    win           BYTE "You Won: ", 0
    loss          BYTE "You Lost.", 0
@@ -1216,6 +1254,7 @@ SetGray:
 	call SetTextColor
    ret
 
+; Roulette Gameplay Logic
 RouletteGameplay PROC
    ; Check if user has enough money to play
    ;cmp money, 50
@@ -1250,6 +1289,11 @@ RouletteGameplay PROC
 
    call Randomize
    call RandomNumberGeneration
+   
+   ; Debugging Statemnt
+   mov edx, winningNumber
+   call WriteDec
+
    call GetBetInput
 
    ret
@@ -1331,122 +1375,127 @@ CheckBettingMethod PROC
 
   jmp InvalidInputLoop
 
+checkOne:
+   mov eax, 1
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
 
 CheckRed:
-    call IsRed
-    jc HalfChance
-    jmp LostBet
+   call IsRed
+   jc HalfChance
+   jmp LostBet
 
 CheckBlack:
-    call IsRed
-    jnc HalfChance
-    jmp LostBet
+   call IsRed
+   jnc HalfChance
+   jmp LostBet
 
 CheckEven:
-    mov eax, winningNumber
-    test eax, 1
-    jz HalfChance    ; If zero flag set, number is even
-    jmp LostBet
+   mov eax, winningNumber
+   test eax, 1
+   jz HalfChance    ; If zero flag set, number is even
+   jmp LostBet
 
 CheckOdd:
-    mov eax, winningNumber
-    test eax, 1
-    jnz HalfChance   ; If zero flag not set, number is odd
-    jmp LostBet
+   mov eax, winningNumber
+   test eax, 1
+   jnz HalfChance   ; If zero flag not set, number is odd
+   jmp LostBet
 
 Check1To18:
-    mov eax, winningNumber
-    cmp eax, 1
-    jb LostBet
-    cmp eax, 18
-    ja LostBet
-    jmp HalfChance
+   mov eax, winningNumber
+   cmp eax, 1
+   jb LostBet
+   cmp eax, 18
+   ja LostBet
+   jmp HalfChance
 
 Check19To36:
-    mov eax, winningNumber
-    cmp eax, 19
-    jb LostBet
-    cmp eax, 36
-    ja LostBet
-    jmp HalfChance
+   mov eax, winningNumber
+   cmp eax, 19
+   jb LostBet
+   cmp eax, 36
+   ja LostBet
+   jmp HalfChance
 
 CheckBettingMethod ENDP
 
 IsRed PROC
-    mov eax, winningNumber
-    ; Roulette red numbers: 1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36
-    cmp eax, 1
-    je IsRedTrue
-    cmp eax, 3
-    je IsRedTrue
-    cmp eax, 5
-    je IsRedTrue
-    cmp eax, 7
-    je IsRedTrue
-    cmp eax, 9
-    je IsRedTrue
-    cmp eax, 12
-    je IsRedTrue
-    cmp eax, 14
-    je IsRedTrue
-    cmp eax, 16
-    je IsRedTrue
-    cmp eax, 18
-    je IsRedTrue
-    cmp eax, 19
-    je IsRedTrue
-    cmp eax, 21
-    je IsRedTrue
-    cmp eax, 23
-    je IsRedTrue
-    cmp eax, 25
-    je IsRedTrue
-    cmp eax, 27
-    je IsRedTrue
-    cmp eax, 30
-    je IsRedTrue
-    cmp eax, 32
-    je IsRedTrue
-    cmp eax, 34
-    je IsRedTrue
-    cmp eax, 36
-    je IsRedTrue
-    clc    ; Clear carry flag = not red
-    ret
+   mov eax, winningNumber
+   ; Roulette red numbers: 1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36
+   cmp eax, 1
+   je IsRedTrue
+   cmp eax, 3
+   je IsRedTrue
+   cmp eax, 5
+   je IsRedTrue
+   cmp eax, 7
+   je IsRedTrue
+   cmp eax, 9
+   je IsRedTrue
+   cmp eax, 12
+   je IsRedTrue
+   cmp eax, 14
+   je IsRedTrue
+   cmp eax, 16
+   je IsRedTrue
+   cmp eax, 18
+   je IsRedTrue
+   cmp eax, 19
+   je IsRedTrue
+   cmp eax, 21
+   je IsRedTrue
+   cmp eax, 23
+   je IsRedTrue
+   cmp eax, 25
+   je IsRedTrue
+   cmp eax, 27
+   je IsRedTrue
+   cmp eax, 30
+   je IsRedTrue
+   cmp eax, 32
+   je IsRedTrue
+   cmp eax, 34
+   je IsRedTrue
+   cmp eax, 36
+   je IsRedTrue
+   clc    ; Clear carry flag = not red
+   ret
     
 IsRedTrue:
-    stc    ; Set carry flag = is red
-    ret
+   stc    ; Set carry flag = is red
+   ret
 IsRed ENDP
 
 CheckFirst12 PROC
-    mov eax, winningNumber
-    cmp eax, 1
-    jb LostBet
-    cmp eax, 12
-    ja LostBet
-    call OneThirdChance
-    ret
+   mov eax, winningNumber
+   cmp eax, 1
+   jb LostBet
+   cmp eax, 12
+   ja LostBet
+   call OneThirdChance
+   ret
 CheckFirst12 ENDP
 
 CheckSecond12 PROC
-    mov eax, winningNumber
-    cmp eax, 13
-    jb LostBet
-    cmp eax, 24
-    ja LostBet
-    call OneThirdChance
-    ret
+   mov eax, winningNumber
+   cmp eax, 13
+   jb LostBet
+   cmp eax, 24
+   ja LostBet
+   call OneThirdChance
+   ret
 CheckSecond12 ENDP
 
 CheckThird12 PROC
-    mov eax, winningNumber
-    cmp eax, 25
-    jb LostBet
-    cmp eax, 36
-    ja LostBet
-    call OneThirdChance
-    ret
+   mov eax, winningNumber
+   cmp eax, 25
+   jb LostBet
+   cmp eax, 36
+   ja LostBet
+   call OneThirdChance
+   ret
 CheckThird12 ENDP
 
 LostBet PROC
@@ -1517,12 +1566,39 @@ OneThirdChance PROC
 
    ret
 
+OneInThirtySevenChange:
+   call WinningNumberOutput
+
+   mov edx, OFFSET win
+   call WriteString
+
+   mov ebx, currentBet
+   mov ebx, currentBet ; Moves the betting amount into ebx
+   imul ebx, ebx, 37    ; Multiplies the bet by ThirtySeven
+   add money, ebx      ; Adds it to the balance
+   mov eax, ebx
+   call WriteDec
+
+   call Crlf
+   mov edx, OFFSET balMsg
+   call WriteString
+   mov eax, money
+   call WriteDec
+   call Crlf
+
+   mov edx, OFFSET playAgainMsg
+   call WriteString
+   mov currentGame, 2
+   call PlayAgainPrompt
+
+   ret
+
 OneThirdChance ENDP
 WinningNumberOutput:
    mov edx, OFFSET winningNumberScript
    call WriteString
    mov edx, OFFSET winningNumber
-   call WriteInt
+   call WriteDec
    call Crlf
    ret
 
