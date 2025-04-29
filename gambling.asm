@@ -84,7 +84,7 @@ INCLUDE Irvine32.inc
    choiceFifteen BYTE "15", 0
    choiceSixteen BYTE "16", 0
    choiceSeventeen BYTE "17", 0
-   chouceEighteen BYTE "18", 0
+   choiceEighteen BYTE "18", 0
    choiceNineTeen BYTE "19", 0
    choiceTwenty BYTE "20", 0
    choiceTwentyOne BYTE "21", 0
@@ -1289,11 +1289,6 @@ RouletteGameplay PROC
 
    call Randomize
    call RandomNumberGeneration
-   
-   ; Debugging Statemnt
-   mov edx, winningNumber
-   call WriteDec
-
    call GetBetInput
 
    ret
@@ -1372,11 +1367,301 @@ CheckBettingMethod PROC
    INVOKE Str_compare, ADDR bettingMethod, ADDR choice3rd12
    je CheckThird12
 
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceZero
+   je CheckZero
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceOne
+   je CheckOne
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwo
+   je CheckTwo
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThree
+   je CheckThree
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceFour
+   je CheckFour
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceFive 
+   je CheckFive
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceSix
+   je CheckSix
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceSeven
+   je CheckSeven
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceEight 
+   je CheckEight
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceNine 
+   je CheckNine
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTen
+   je CheckTen
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceEleven
+   je CheckEleven
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwelve
+   je CheckTwelve
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThirteen
+   je CheckThirteen
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceFourteen
+   je CheckFourteen
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceFifteen
+   je CheckFifteen
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceSixteen
+   je CheckSixteen
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceSeventeen
+   je CheckSeventeen
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceEighteen
+   je CheckEighteen
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceNineTeen
+   je CheckNineteen
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwenty
+   je CheckTwenty
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwentyOne
+   je CheckTwentyOne
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwentyTwo
+   je CheckTwentyTwo
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwentyThree
+   je CheckTwentyThree
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwentyFour
+   je CheckTwentyFour
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwentyFive
+   je CheckTwentyFive
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwentySix 
+   je CheckTwentySix
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwentySeven
+   je CheckTwentySeven
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwentyEight
+   je CheckTwentyEight
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceTwentyNine
+   je CheckTwentyNine
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThirty
+   je CheckThirty
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThirtyOne
+   je CheckThirtyOne
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThirtyTwo
+   je CheckThirtyTwo
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThirtyThree
+   je CheckThirtyThree
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThirtyFour
+   je CheckThirtyFour
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThirtyFive
+   je CheckThirtyFive
+
+   INVOKE Str_compare, ADDR bettingMethod, ADDR choiceThirtySix
+   je CheckThirtySix
 
   jmp InvalidInputLoop
 
-checkOne:
+CheckZero:
+   mov eax, 0
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckOne:
    mov eax, 1
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwo:
+   mov eax, 2
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckThree:
+   mov eax, 3
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckFour:
+   mov eax, 4
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckFive:
+   mov eax, 5
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckSix:
+   mov eax, 6
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckSeven:
+   mov eax, 7
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckEight:
+   mov eax, 8
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckNine:
+   mov eax, 9
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTen:
+   mov eax, 10
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckEleven:
+   mov eax, 11
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwelve:
+   mov eax, 12
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckThirteen:
+   mov eax, 13
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckFourteen:
+   mov eax, 14
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckFifteen:
+   mov eax, 15
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckSixteen:
+   mov eax, 16
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckSeventeen:
+   mov eax, 17
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckEighteen:
+   mov eax, 18
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckNineteen:
+   mov eax, 19
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwenty:
+   mov eax, 20
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwentyOne:
+   mov eax, 21
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwentyTwo:
+   mov eax, 22
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwentyThree:
+   mov eax, 23
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwentyFour:
+   mov eax, 24
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwentyFive:
+   mov eax, 25
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwentySix:
+   mov eax, 26 
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwentySeven:
+   mov eax, 27
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwentyEight:
+   mov eax, 28
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckTwentyNine:
+   mov eax, 29
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckThirty:
+   mov eax, 30
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckThirtyOne:
+   mov eax, 31
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckThirtyTwo:
+   mov eax, 32
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckThirtyThree:
+   mov eax, 33
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckThirtyFour:
+   mov eax, 34
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckThirtyFive:
+   mov eax, 35
+   cmp eax, winningNumber
+   je OneInThirtySevenChange
+   call LostBet
+CheckThirtySix:
+   mov eax, 36
    cmp eax, winningNumber
    je OneInThirtySevenChange
    call LostBet
@@ -1565,8 +1850,8 @@ OneThirdChance PROC
    call PlayAgainPrompt
 
    ret
-
-OneInThirtySevenChange:
+OneThirdChance ENDP
+OneInThirtySevenChange PROC
    call WinningNumberOutput
 
    mov edx, OFFSET win
@@ -1593,7 +1878,7 @@ OneInThirtySevenChange:
 
    ret
 
-OneThirdChance ENDP
+OneInThirtySevenChange ENDP
 WinningNumberOutput:
    mov edx, OFFSET winningNumberScript
    call WriteString
